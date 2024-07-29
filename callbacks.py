@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 
 from pages.home import home_page
 from pages.time import time_page, time_diff
+from pages.currency import currency_page
 
 
 def register_callbacks(app):
@@ -11,10 +12,10 @@ def register_callbacks(app):
     def render_page_content(pathname):
         if pathname == "/":
             return home_page()
-        elif pathname == "/time-utilities":
+        elif pathname == "/time-diff":
             return time_page()
-        elif pathname == "/page-2":
-            return html.P("Oh cool, this is page 2!")
+        elif pathname == "/currency-ex":
+            return currency_page()
         # If the user tries to reach a different page, return a 404 message
         return html.Div(
             [
