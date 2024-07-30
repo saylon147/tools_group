@@ -1,5 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
+import dash_mantine_components as dmc
 from dash import html, dcc, Output, Input
 
 from callbacks import register_callbacks
@@ -49,7 +50,9 @@ sidebar = html.Div(
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+app.layout = dmc.MantineProvider(
+    html.Div([dcc.Location(id="url"), sidebar, content])
+)
 
 
 # 注册回调函数
