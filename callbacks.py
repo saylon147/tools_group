@@ -1,10 +1,11 @@
 from dash import html, Output, Input, State, MATCH
 import dash_bootstrap_components as dbc
 
+
 from pages.home import home_page
-from pages.time import time_page, time_diff
+from pages.time import time_page, register_callbacks_time
+from pages.image import image_page, register_callbacks_image
 from pages.currency import currency_page
-from pages.image import image_page
 
 
 def register_callbacks(app):
@@ -29,39 +30,5 @@ def register_callbacks(app):
             className="p-3 bg-light rounded-3",
         )
 
-    @app.callback(
-        Output({'type': 'date-diff-output', 'index': MATCH}, 'children'),
-        Input({'type': 'date-input', 'index': MATCH}, 'value'),
-    )
-    def update_date_difference(input_date):
-        if input_date:
-            if difference := time_diff(input_date):
-                if difference > 0:
-                    return f"{difference} 天之后"
-                elif difference < 0:
-                    return f"第 {-difference} 天"
-                else:
-                    return ""
-        else:
-            return "Select a Date"
-
-    @app.callback(
-        Output('input-container', 'children'),
-        Input('add-button', 'n_clicks'),
-        State('input-store', 'data'),
-        State('input-container', 'children')
-    )
-    def add_date_input(n_clicks, stored_data, existing_inputs):
-        if n_clicks > 0:
-            new_index = len(existing_inputs) + 1
-            new_input_group = dbc.InputGroup(
-                [
-                    dbc.InputGroupText(f"Date {new_index}"),
-                    dbc.Input(placeholder="Date", id={'type': 'date-input', 'index': new_index}, type="date",
-                              value=stored_data['default-date']),
-                    dbc.InputGroupText(id={'type': 'date-diff-output', 'index': new_index}, style={"marginLeft": "10px"})
-                ],
-                className="mb-3",
-            )
-            existing_inputs.append(new_input_group)
-        return existing_inputs
+    register_callbacks_time(app)
+    register_callbacks_image(app)

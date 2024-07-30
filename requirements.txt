@@ -1,3 +1,5 @@
 dash
 dash-bootstrap-components
 pillow
+dash-mantine-components
+dash-iconify
