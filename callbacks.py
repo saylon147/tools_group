@@ -6,6 +6,7 @@ from pages.home import home_page
 from pages.time import time_page, register_callbacks_time
 from pages.image import image_page, register_callbacks_image
 from pages.currency import currency_page
+from pages.download import download_page
 
 
 def register_callbacks(app):
@@ -18,6 +19,8 @@ def register_callbacks(app):
             return time_page()
         elif pathname == "/currency-ex":
             return currency_page()
+        elif pathname == "/download":
+            return download_page()
         elif pathname == "/image-process":
             return image_page()
         # If the user tries to reach a different page, return a 404 message

@@ -38,7 +38,8 @@ sidebar = html.Div(
             [
                 dbc.NavLink("Home", href="/", active="exact"),
                 dbc.NavLink("Time Difference", href="/time-diff", active="exact"),
-                dbc.NavLink("Currency Exchange", href="/currency-ex", active="exact"),
+                # dbc.NavLink("Currency Exchange", href="/currency-ex", active="exact"),
+                dbc.NavLink("Download", href="/download", active="exact"),
                 dbc.NavLink("Image Process", href="/image-process", active="exact"),
             ],
             vertical=True,
