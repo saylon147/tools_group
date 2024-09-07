@@ -6,7 +6,7 @@ from pages.home import home_page
 from pages.time import time_page, register_callbacks_time
 from pages.image import image_page, register_callbacks_image
 from pages.currency import currency_page
-from pages.download import download_page
+from pages.download import download_page, register_callback_download
 
 
 def register_callbacks(app):
@@ -35,3 +35,4 @@ def register_callbacks(app):
 
     register_callbacks_time(app)
     register_callbacks_image(app)
+    register_callback_download(app)
