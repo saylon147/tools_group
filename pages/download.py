@@ -1,14 +1,39 @@
 import json
+import os
 import uuid
 import re
 
-from dash import html, Output, Input, State, ALL, no_update, callback_context, clientside_callback
+import certifi
+import requests
 import dash_mantine_components as dmc
+from dash import html, Output, Input, State, ALL, no_update, callback_context, clientside_callback
 from dash_iconify import DashIconify
 
 
-def start_download(url, path, rename):
-    print(url, path, rename)
+def start_download(url, save_path, new_filename):
+    url = url.strip()
+    save_path = save_path.strip()
+    new_filename = new_filename.strip()
+    # print(url, save_path, new_filename)
+
+    # 确保保存路径存在
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # 构建完整的保存路径，包括文件名
+    file_path = os.path.join(save_path, f"{new_filename}.mp3")
+
+    # 发送请求，获取MP3文件内容
+    response = requests.get(url, stream=True, verify=certifi.where())
+    if response.status_code == 200:
+        with open(file_path, 'wb') as mp3_file:
+            # 将文件分块写入，避免占用大量内存
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    mp3_file.write(chunk)
+        print(f"MP3 file downloaded and saved as: {file_path}")
+    else:
+        print(f"Failed to download the MP3 file. Status code: {response.status_code}")
 
 
 def add_download_entry(entry_id, rename):
@@ -16,6 +41,7 @@ def add_download_entry(entry_id, rename):
         dmc.TextInput("", placeholder="url", style={"flex": "1"}, id={"type": "url-input", "index": entry_id}),
         dmc.TextInput(rename, placeholder="rename", w=200, id={"type": "name-input", "index": entry_id}),
         dmc.Button("Start", id={"type": "start-button", "index": entry_id}),
+        dmc.Button("Finish", color="lime", id={"type": "finish-button", "index": entry_id}),
     ],
     )
 
@@ -71,10 +97,12 @@ def register_callback_download(app):
          State({"type": "name-input", "index": ALL}, "value"),
          State({"type": "start-button", "index": ALL}, "id")],
         [Input("new-download-btn", "n_clicks"),
-         Input({"type": "start-button", "index": ALL}, "n_clicks")],
+         Input({"type": "start-button", "index": ALL}, "n_clicks"),
+         Input({"type": "finish-button", "index": ALL}, "n_clicks")],
         prevent_init_call=True,
     )
-    def add_new_download_entry(children, output_path, rename, urls, names, button_ids, add_clicks, start_clicks):
+    def add_new_download_entry(children, output_path, rename, urls, names, button_ids,
+                               add_clicks, start_clicks, finish_clicks):
         ctx = callback_context
         if not ctx.triggered:
             return no_update, no_update
@@ -100,3 +128,16 @@ def register_callback_download(app):
                     rename_input = names[idx]
                     start_download(url_input, output_path, rename_input)
                     return no_update, no_update
+        elif "finish-button" in triggered_id:
+            triggered_id_dict = json.loads(triggered_id)
+            entry_to_remove = triggered_id_dict["index"]
+            # 从 children 列表中移除相应的条目
+            children = [
+                child for child in children
+                if not any(
+                    comp['props']['id'].get('type') == 'finish-button' and
+                    comp['props']['id'].get('index') == entry_to_remove
+                    for comp in child['props']['children']
+                )
+            ]
+            return children, no_update
